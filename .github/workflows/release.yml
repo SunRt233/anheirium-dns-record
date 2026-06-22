@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate version.json
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          SHA="${{ github.sha }}"
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          
+          # Extract records from anhery.db
+          RECORDS=$(grep -E "^\S+\s+IN\s+A\s+" anhery.db | awk '{printf "\"%s\": \"%s\", ", $1, $4}' | sed 's/, $//')
+          
+          cat > version.json <<EOF
+          {
+            "zone": "anhery",
+            "version": "$TAG",
+            "sha": "$SHA",
+            "tag": "${GITHUB_REF#refs/tags/}",
+            "generated": "$TIMESTAMP",
+            "records": { $RECORDS }
+          }
+          EOF
+          
+          jq . version.json
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            anhery.db
+            version.json
+          generate_release_notes: true
