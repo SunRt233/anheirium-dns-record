@@ -1,0 +1,17 @@
+$ORIGIN anhery.
+$TTL 300
+
+@       IN  SOA ns.anhery. admin.anhery. (
+            2026062201  ; serial
+            3600        ; refresh
+            900         ; retry
+            604800      ; expire
+            300 )       ; minimum
+
+        IN  NS  ns.anhery.
+
+ns        IN  A   127.0.0.1
+rs        IN  A   10.233.30.2
+anvela    IN  A   10.233.30.4
+lyrion    IN  A   10.233.30.3
+torifune  IN  A   10.233.30.5
